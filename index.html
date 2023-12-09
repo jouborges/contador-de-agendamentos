@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador de Agendamentos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://app.ninasaude.com.br/logo-login.e24b44d0479cbfd0c314.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            background-blend-mode: darken;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #counter {
+            font-size: 36px;
+            font-weight: bold;
+            color: #f5886c;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #f5886c;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #f77a5c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contador de Agendamentos</h1>
+        <p>Agendamentos Realizados:</p>
+        <div id="counter">0</div>
+        <button onclick="agendarVacina()">Agendar</button>
+    </div>
+
+    <script>
+        let contador = parseInt(localStorage.getItem('contador')) || 0;
+        document.getElementById('counter').innerText = contador;
+
+        function agendarVacina() {
+            contador++;
+            document.getElementById('counter').innerText = contador;
+            localStorage.setItem('contador', contador.toString());
+        }
+    </script>
+</body>
+</html>
