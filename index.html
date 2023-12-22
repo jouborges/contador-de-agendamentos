@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://app.ninasaude.com.br/assets/img/png/favicon.png" type="image/png">
-    <title>Contador de Agendamentos</title>
+    <title>Registro de Agendamentos</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: url('https://app.ninasaude.com.br/logo-login.e24b44d0479cbfd0c314.jpeg') no-repeat center center fixed;
             background-size: cover;
             margin: 0;
@@ -29,59 +29,106 @@
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             max-width: 400px;
             width: 100%;
-            box-sizing: border-box;
+            margin: auto;
         }
 
         h1 {
             color: #333;
+            margin-bottom: 20px;
         }
 
-        #counter {
-            font-size: 36px;
-            font-weight: bold;
-            color: #f5886c;
-            margin-top: 10px;
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        #dateInput {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 16px;
             background-color: #f5886c;
             color: #fff;
             border: none;
             cursor: pointer;
-            margin-top: 20px;
             border-radius: 5px;
             transition: background-color 0.3s;
+            width: 100%;
+            margin-bottom: 20px;
         }
 
         button:hover {
             background-color: #f77a5c;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                max-width: 100%;
-            }
+        #contador {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        #filtroData {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Contador de Agendamentos</h1>
-        <p>Agendamentos Realizados:</p>
-        <div id="counter">0</div>
-        <button onclick="agendarVacina()">Agendar</button>
+        <h1>Registro de Agendamentos</h1>
+        <label for="dateInput">Data do Agendamento:</label>
+        <input type="date" id="dateInput">
+        <button onclick="registrarAgendamento()">Registrar</button>
+        <div id="contador">Total de Agendamentos: <span id="totalAgendamentos">0</span></div>
+        <label for="filtroData">Filtrar por Data:</label>
+        <input type="date" id="filtroData" onchange="atualizarContador()">
     </div>
 
     <script>
-        let contador = parseInt(localStorage.getItem('contador')) || 0;
-        document.getElementById('counter').innerText = contador;
+        let registros = JSON.parse(localStorage.getItem('registros')) || [];
 
-        function agendarVacina() {
-            contador++;
-            document.getElementById('counter').innerText = contador;
-            localStorage.setItem('contador', contador.toString());
+        function registrarAgendamento() {
+            const dataAgendada = document.getElementById('dateInput').value;
+            const dataRegistro = new Date().toLocaleDateString();
+
+            if (dataAgendada === "") {
+                alert("Por favor, selecione uma data para o agendamento.");
+                return;
+            }
+
+            const registro = { dataAgendada, dataRegistro };
+            registros.push(registro);
+
+            localStorage.setItem('registros', JSON.stringify(registros));
+
+            atualizarContador();
+            alert("Agendamento registrado com sucesso!");
+        }
+
+        function atualizarContador() {
+            const filtroData = document.getElementById('filtroData').value;
+
+            const totalAgendamentos = filtroData
+                ? registros.filter(registro => registro.dataAgendada === filtroData).length
+                : registros.length;
+
+            document.getElementById('totalAgendamentos').innerText = totalAgendamentos;
         }
     </script>
 </body>
