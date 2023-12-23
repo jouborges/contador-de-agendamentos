@@ -16,19 +16,17 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.7);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
             background-blend-mode: darken;
         }
         .container {
-            text-align: center;
             background-color: #ffffff;
-            padding: 20px;
+            padding: 30px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
-            margin: auto;
+            width: 400px;
+            text-align: center;
         }
         h1 {
             color: #333;
@@ -58,76 +56,116 @@
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.3s;
-            width: 100%;
-            margin-bottom: 20px;
         }
         button:hover {
             background-color: #f77a5c;
         }
-        .dialog-box {
+        #totalContagem {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .floating-card {
             position: fixed;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: green;
+            background-color: #4CAF50;
             color: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            font-size: 18px;
         }
-        .show-dialog {
-            opacity: 1;
+        .error-card {
+            background-color: #FF6B6B;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Registro de Agendamentos</h1>
-        <label for="dateInput">Data do Agendamento:</label>
-        <input type="date" id="dateInput">
+        <!-- Registros com base na data -->
+        <input type="date" id="dateInput" placeholder="Selecione a data">
         <button onclick="registrarAgendamento()">Registrar</button>
-        <div id="contador">Total de Agendamentos: <span id="totalAgendamentos">0</span></div>
-        <label for="startDate">Filtrar entre:</label>
+        
+        <!-- Contador total mensal -->
+        <div id="totalContagem">Total Mensal: <span id="totalAgendamentos">0</span></div>
+        
+        <!-- Filtros de data -->
+        <label for="startDate">Filtrar por período:</label>
         <input type="date" id="startDate">
-        <label for="endDate">e:</label>
-        <input type="date" id="endDate" onchange="atualizarContador()">
+        <input type="date" id="endDate" onchange="filtrarRegistros()">
     </div>
-    <div class="dialog-box" id="floatingDialog">
-        Agendamento realizado com sucesso
-    </div>
+    
+    <!-- Mensagens flutuantes -->
+    <div class="floating-card" id="floatingCard">Agendamento realizado com sucesso</div>
+    <div class="floating-card" id="errorCard" style="display: none; background-color: #FF6B6B;">Selecione uma data</div>
+
     <script>
         let registros = JSON.parse(localStorage.getItem('registros')) || [];
+
         function registrarAgendamento() {
             const dataAgendada = document.getElementById('dateInput').value;
-            const dataRegistro = new Date().toLocaleDateString();
-            if (dataAgendada === "") {
-                alert("Por favor, selecione uma data para o agendamento.");
+            if (!dataAgendada) {
+                showErrorCard();
                 return;
             }
-            const registro = { dataAgendada, dataRegistro };
-            registros.push(registro);
-            localStorage.setItem('registros', JSON.stringify(registros));
-            atualizarContador();
-            showFloatingDialog();
+            saveAndShowFloatingCard(dataAgendada);
         }
-        function atualizarContador() {
-            const startDate = new Date(document.getElementById('startDate').value);
-            const endDate = new Date(document.getElementById('endDate').value);
-            let filteredRegistros = registros.filter(registro => {
-                const registroDate = new Date(registro.dataAgendada);
-                return registroDate >= startDate && registroDate <= endDate;
-            });
-            document.getElementById('totalAgendamentos').innerText = filteredRegistros.length;
-        }
-        function showFloatingDialog() {
-            const dialog = document.getElementById('floatingDialog');
-            dialog.classList.add('show-dialog');
+
+        function showErrorCard() {
+            document.getElementById('errorCard').style.display = 'block';
             setTimeout(() => {
-                dialog.classList.remove('show-dialog');
+                document.getElementById('errorCard').style.display = 'none';
             }, 3000);
         }
+
+        function saveAndShowFloatingCard(dataAgendada) {
+            document.getElementById('errorCard').style.display = 'none';
+            document.getElementById('floatingCard').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('floatingCard').style.display = 'none';
+            }, 3000);
+
+            const dataRegistro = new Date().toLocaleDateString();
+            registros.push({ dataAgendada, dataRegistro });
+            localStorage.setItem('registros', JSON.stringify(registros));
+            atualizarContador();
+        }
+
+        function atualizarContador() {
+            const hoje = new Date();
+            const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+            const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+            
+            let filtered = registros.filter(registro => {
+                const dataRegistro = new Date(registro.dataAgendada);
+                return dataRegistro >= primeiroDiaMes && dataRegistro <= ultimoDiaMes;
+            });
+            document.getElementById('totalAgendamentos').innerText = filtered.length;
+        }
+
+        function filtrarRegistros() {
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            
+            if (startDate && endDate) {
+                let filtered = registros.filter(registro => {
+                    const dataRegistro = new Date(registro.dataAgendada);
+                    return dataRegistro >= startDate && dataRegistro <= endDate;
+                });
+                document.getElementById('totalAgendamentos').innerText = filtered.length;
+            } else {
+                atualizarContador();
+            }
+        }
+
+        window.onload = function() {
+            atualizarContador();
+        };
     </script>
 </body>
 </html>
