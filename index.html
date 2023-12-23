@@ -20,7 +20,6 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
             background-blend-mode: darken;
         }
-
         .container {
             text-align: center;
             background-color: #ffffff;
@@ -31,20 +30,17 @@
             width: 100%;
             margin: auto;
         }
-
         h1 {
             color: #333;
             margin-bottom: 20px;
         }
-
         label {
             display: block;
             text-align: left;
             margin-bottom: 8px;
             color: #333;
         }
-
-        #dateInput {
+        #dateInput, #startDate, #endDate {
             width: 100%;
             padding: 10px;
             font-size: 16px;
@@ -53,7 +49,6 @@
             border-radius: 5px;
             margin-bottom: 20px;
         }
-
         button {
             padding: 12px 20px;
             font-size: 16px;
@@ -66,26 +61,24 @@
             width: 100%;
             margin-bottom: 20px;
         }
-
         button:hover {
             background-color: #f77a5c;
         }
-
-        #contador {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
+        .dialog-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: green;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
-
-        #filtroData {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        .show-dialog {
+            opacity: 1;
         }
     </style>
 </head>
@@ -96,39 +89,44 @@
         <input type="date" id="dateInput">
         <button onclick="registrarAgendamento()">Registrar</button>
         <div id="contador">Total de Agendamentos: <span id="totalAgendamentos">0</span></div>
-        <label for="filtroData">Filtrar por Data:</label>
-        <input type="date" id="filtroData" onchange="atualizarContador()">
+        <label for="startDate">Filtrar entre:</label>
+        <input type="date" id="startDate">
+        <label for="endDate">e:</label>
+        <input type="date" id="endDate" onchange="atualizarContador()">
     </div>
-
+    <div class="dialog-box" id="floatingDialog">
+        Agendamento realizado com sucesso
+    </div>
     <script>
         let registros = JSON.parse(localStorage.getItem('registros')) || [];
-
         function registrarAgendamento() {
             const dataAgendada = document.getElementById('dateInput').value;
             const dataRegistro = new Date().toLocaleDateString();
-
             if (dataAgendada === "") {
                 alert("Por favor, selecione uma data para o agendamento.");
                 return;
             }
-
             const registro = { dataAgendada, dataRegistro };
             registros.push(registro);
-
             localStorage.setItem('registros', JSON.stringify(registros));
-
             atualizarContador();
-            alert("Agendamento registrado com sucesso!");
+            showFloatingDialog();
         }
-
         function atualizarContador() {
-            const filtroData = document.getElementById('filtroData').value;
-
-            const totalAgendamentos = filtroData
-                ? registros.filter(registro => registro.dataAgendada === filtroData).length
-                : registros.length;
-
-            document.getElementById('totalAgendamentos').innerText = totalAgendamentos;
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            let filteredRegistros = registros.filter(registro => {
+                const registroDate = new Date(registro.dataAgendada);
+                return registroDate >= startDate && registroDate <= endDate;
+            });
+            document.getElementById('totalAgendamentos').innerText = filteredRegistros.length;
+        }
+        function showFloatingDialog() {
+            const dialog = document.getElementById('floatingDialog');
+            dialog.classList.add('show-dialog');
+            setTimeout(() => {
+                dialog.classList.remove('show-dialog');
+            }, 3000);
         }
     </script>
 </body>
