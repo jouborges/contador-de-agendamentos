@@ -87,20 +87,19 @@
 <body>
     <div class="container">
         <h1>Registro de Agendamentos</h1>
-        <!-- Registros com base na data -->
         <input type="date" id="dateInput" placeholder="Selecione a data">
         <button onclick="registrarAgendamento()">Registrar</button>
         
-        <!-- Contador total mensal -->
+
         <div id="totalContagem">Total Mensal: <span id="totalAgendamentos">0</span></div>
         
-        <!-- Filtros de data -->
+  
         <label for="startDate">Filtrar por período:</label>
         <input type="date" id="startDate">
         <input type="date" id="endDate" onchange="filtrarRegistros()">
     </div>
     
-    <!-- Mensagens flutuantes -->
+    
     <div class="floating-card" id="floatingCard">Agendamento realizado com sucesso</div>
     <div class="floating-card" id="errorCard" style="display: none; background-color: #FF6B6B;">Selecione uma data</div>
 
