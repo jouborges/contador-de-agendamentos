@@ -1,170 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://app.ninasaude.com.br/assets/img/png/favicon.png" type="image/png">
-    <title>Registro de Agendamentos</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: url('https://app.ninasaude.com.br/logo-login.e24b44d0479cbfd0c314.jpeg') no-repeat center center fixed;
-            background-size: cover;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.7);
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
-            background-blend-mode: darken;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            text-align: left;
-            margin-bottom: 8px;
-            color: #333;
-        }
-        #dateInput, #startDate, #endDate {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 12px 20px;
-            font-size: 16px;
-            background-color: #f5886c;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #f77a5c;
-        }
-        #totalContagem {
-            margin-top: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-        .floating-card {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            display: none;
-            font-size: 18px;
-        }
-        .error-card {
-            background-color: #FF6B6B;
-        }
-    </style>
+    <title>Registro de Vendas</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <div class="container">
-        <h1>Registro de Agendamentos</h1>
+        <h1>Registro de Vendas</h1>
         <input type="date" id="dateInput" placeholder="Selecione a data">
+        <label for="vendaInput">Venda (R$):</label>
+        <input type="number" id="vendaInput" placeholder="0.00" step="0.01" min="0">
         <button onclick="registrarAgendamento()">Registrar</button>
-        
-
-        <div id="totalContagem">Total Mensal: <span id="totalAgendamentos">0</span></div>
-        
-  
-        <label for="startDate">Filtrar por período:</label>
+        <div id="totalContagem">Vendas do Dia: <span id="totalAgendamentos">0</span></div>
+        <label for="startDate">Filtrar por período</label>
         <input type="date" id="startDate">
-        <input type="date" id="endDate" onchange="filtrarRegistros()">
+        <input type="date" id="endDate">
+        <button onclick="filtrarRegistros()">Filtrar</button>
+        <button id="limparFiltro">Limpar Filtro</button>
     </div>
-    
-    
-    <div class="floating-card" id="floatingCard">Agendamento realizado com sucesso</div>
-    <div class="floating-card" id="errorCard" style="display: none; background-color: #FF6B6B;">Selecione uma data</div>
-
-    <script>
-        let registros = JSON.parse(localStorage.getItem('registros')) || [];
-
-        function registrarAgendamento() {
-            const dataAgendada = document.getElementById('dateInput').value;
-            if (!dataAgendada) {
-                showErrorCard();
-                return;
-            }
-            saveAndShowFloatingCard(dataAgendada);
-        }
-
-        function showErrorCard() {
-            document.getElementById('errorCard').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('errorCard').style.display = 'none';
-            }, 3000);
-        }
-
-        function saveAndShowFloatingCard(dataAgendada) {
-            document.getElementById('errorCard').style.display = 'none';
-            document.getElementById('floatingCard').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('floatingCard').style.display = 'none';
-            }, 3000);
-
-            const dataRegistro = new Date().toLocaleDateString();
-            registros.push({ dataAgendada, dataRegistro });
-            localStorage.setItem('registros', JSON.stringify(registros));
-            atualizarContador();
-        }
-
-        function atualizarContador() {
-            const hoje = new Date();
-            const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-            const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-            
-            let filtered = registros.filter(registro => {
-                const dataRegistro = new Date(registro.dataAgendada);
-                return dataRegistro >= primeiroDiaMes && dataRegistro <= ultimoDiaMes;
-            });
-            document.getElementById('totalAgendamentos').innerText = filtered.length;
-        }
-
-        function filtrarRegistros() {
-            const startDate = new Date(document.getElementById('startDate').value);
-            const endDate = new Date(document.getElementById('endDate').value);
-            
-            if (startDate && endDate) {
-                let filtered = registros.filter(registro => {
-                    const dataRegistro = new Date(registro.dataAgendada);
-                    return dataRegistro >= startDate && dataRegistro <= endDate;
-                });
-                document.getElementById('totalAgendamentos').innerText = filtered.length;
-            } else {
-                atualizarContador();
-            }
-        }
-
-        window.onload = function() {
-            atualizarContador();
-        };
-    </script>
+    <div class="floating-card" id="floatingCardSuccess">Agendamento realizado com sucesso</div>
+    <div class="floating-card" id="errorCard" style="display: none; background-color: #FF6B6B">Selecione uma data</div>
+    <script src="script.js"></script>
 </body>
 </html>
