@@ -61,7 +61,7 @@ function filtrarRegistros() {
         document.getElementById('totalAgendamentos').innerText = formatarReal(saldoPeriodo);
         document.getElementById('totalContagem').innerText = 'Total de Vendas:';
     } else {
-        atualizarContador();
+        atualizarSaldoDiario();
         document.getElementById('totalContagem').innerText = 'Vendas do Dia:';
     }
 }
