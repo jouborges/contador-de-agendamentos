@@ -80,5 +80,4 @@ document.getElementById('limparFiltro').addEventListener('click', limparFiltro);
 
 window.onload = function() {
     atualizarSaldoDiario();
-    atualizarContador();
-};
+    atualizarContador(); };
