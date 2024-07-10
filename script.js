@@ -48,22 +48,25 @@ function atualizarSaldoDiario() {
 }
 
 function filtrarRegistros() {
-    const startDate = new Date(document.getElementById('startDate').value);
-    const endDate = new Date(document.getElementById('endDate').value);
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
 
     if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+
         const saldoPeriodo = registros
             .filter(registro => {
                 const dataRegistro = new Date(registro.dataAgendada);
-                return dataRegistro >= startDate && dataRegistro <= endDate;
+                return dataRegistro >= start && dataRegistro <= end;
             })
             .reduce((total, registro) => total + registro.valorVenda, 0);
 
         document.getElementById('totalAgendamentos').innerText = formatarReal(saldoPeriodo);
-        document.getElementById('totalContagem').innerText = 'Total de Vendas:';
+        document.getElementById('totalContagem').innerText = 'Total de Vendas no Período:';
     } else {
         atualizarSaldoDiario();
-        document.getElementById('totalContagem').innerText = 'Vendas do Dia:';
     }
 }
 
