@@ -44,6 +44,7 @@ function atualizarSaldoDiario() {
         .reduce((total, registro) => total + registro.valorVenda, 0);
 
     document.getElementById('totalAgendamentos').innerText = formatarReal(saldoDia);
+    document.getElementById('totalContagem').innerText = 'Vendas do Dia:';
 }
 
 function filtrarRegistros() {
@@ -84,3 +85,8 @@ window.onload = function() {
 };
 
 localStorage.setItem('dataAtual', new Date().getTime());
+
+function atualizarContador() {
+    const totalVendas = registros.reduce((total, registro) => total + registro.valorVenda, 0);
+    document.getElementById('totalContagem').innerText = `Total de Vendas: ${formatarReal(totalVendas)}`;
+}
